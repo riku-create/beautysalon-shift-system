@@ -21,6 +21,9 @@ export default function Home() {
             </p>
           </div>
           <nav className="space-x-4">
+            <Link href="/salon-register" className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition duration-200 font-semibold mr-4">
+              サロン登録
+            </Link>
             <Link href="/faq" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 font-semibold">
               よくある質問
             </Link>

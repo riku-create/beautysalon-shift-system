@@ -165,6 +165,7 @@ export interface Salon {
   address: string
   openHours: string
   closeHours: string
+  createdAt?: string
 }
 
 // サンプルデータ
@@ -538,13 +539,29 @@ export function saveShifts(shifts: Shift[]): void {
   localStorage.setItem('beauty-salon-shifts', JSON.stringify(shifts))
 }
 
-export function getSalon(): Salon {
-  const saved = localStorage.getItem('beauty-salon-settings')
-  return saved ? JSON.parse(saved) : sampleSalon
+export function getSalon(): Salon | null {
+  try {
+    const salon = localStorage.getItem('beauty-salon-info')
+    return salon ? JSON.parse(salon) : null
+  } catch (error) {
+    console.error('❌ サロン情報の取得に失敗しました:', error)
+    return null
+  }
 }
 
 export function saveSalon(salon: Salon): void {
-  localStorage.setItem('beauty-salon-settings', JSON.stringify(salon))
+  try {
+    const salonWithTimestamp = {
+      ...salon,
+      createdAt: salon.createdAt || new Date().toISOString()
+    }
+    
+    localStorage.setItem('beauty-salon-info', JSON.stringify(salonWithTimestamp))
+    console.log('✅ サロン情報を保存しました:', salonWithTimestamp)
+  } catch (error) {
+    console.error('❌ サロン情報の保存に失敗しました:', error)
+    throw new Error('サロン情報の保存に失敗しました')
+  }
 }
 
 export function getReservations(): Reservation[] {
@@ -1841,36 +1858,38 @@ export function resetAllData(): void {
 
 
 // ================================================
-// ダッシュボード統計機能（必須関数群）
-// ================================================
-
-export function getShiftStats() {
-  const shifts = getShifts()
-  const today = new Date().toISOString().split('T')[0]
-// ================================================
-// ダッシュボード統計機能（重複修正版）
+// ダッシュボード統計機能
 // ================================================
 
 export function getShiftStats() {
   try {
     const shifts = getShifts()
     const today = new Date().toISOString().split('T')[0]
+    const thisMonth = new Date().toISOString().slice(0, 7)
     
+    // 本日のシフト
+    const todayShifts = shifts.filter(shift => shift.date === today)
+    
+    // 今月のシフト
+    const thisMonthShifts = shifts.filter(shift => shift.date.startsWith(thisMonth))
+    
+    // 稼働中スタッフ数（本日シフトのあるスタッフ）
+    const activeStaffToday = new Set(todayShifts.map(shift => shift.staffId)).size
+    
+    // 統計情報を返す
     return {
-      total: shifts.length,
-      approved: shifts.filter(s => s.status === '承認済み').length,
-      pending: shifts.filter(s => s.status === '申請中').length,
-      rejected: shifts.filter(s => s.status === '却下').length,
-      today: shifts.filter(s => s.date === today && s.status === '承認済み').length
+      todayShifts: todayShifts.length,
+      thisMonthShifts: thisMonthShifts.length,
+      activeStaffToday,
+      totalStaff: getStaff().filter(s => s.isActive).length
     }
   } catch (error) {
-    console.error('getShiftStats error:', error)
+    console.error('シフト統計の取得に失敗しました:', error)
     return {
-      total: 0,
-      approved: 0,
-      pending: 0,
-      rejected: 0,
-      today: 0
+      todayShifts: 0,
+      thisMonthShifts: 0,
+      activeStaffToday: 0,
+      totalStaff: 0
     }
   }
 }
@@ -1920,5 +1939,18 @@ export function getTodayReservations() {
   } catch (error) {
     console.error('getTodayReservations error:', error)
     return []
+  }
+}
+
+// ================================================
+// サロン管理機能
+// ================================================
+
+export function deleteSalon(): void {
+  try {
+    localStorage.removeItem('beauty-salon-info')
+    console.log('✅ サロン情報を削除しました')
+  } catch (error) {
+    console.error('❌ サロン情報の削除に失敗しました:', error)
   }
 }
