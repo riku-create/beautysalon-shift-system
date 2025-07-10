@@ -96,3 +96,130 @@ export default function LoginPage() {
                 <button
                   onClick={() => handleTestLogin('admin@salon.com', 'admin123')}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs"
+                >
+                  admin@salon.com
+                </button>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-700">従業員:</span>
+                <button
+                  onClick={() => handleTestLogin('employee@salon.com', 'employee123')}
+                  className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
+                >
+                  employee@salon.com
+                </button>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-700">お客様:</span>
+                <button
+                  onClick={() => handleTestLogin('customer@example.com', 'customer123')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs"
+                >
+                  customer@example.com
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                メールアドレス
+              </label>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="メールアドレスを入力"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                パスワード
+              </label>
+              <div className="mt-1 relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                  placeholder="パスワードを入力"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="rounded-md bg-red-50 p-4">
+                <div className="text-sm text-red-700">{error}</div>
+              </div>
+            )}
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'ログイン中...' : 'ログイン'}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">システム機能</span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setDebugMode(!debugMode)}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                {debugMode ? '🐛 ON' : '🐛 OFF'}
+              </button>
+              <button
+                onClick={handleDebugInfo}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                📊 状態確認
+              </button>
+            </div>
+
+            <div className="mt-3">
+              <button
+                onClick={handleResetData}
+                className="w-full inline-flex justify-center py-2 px-4 border border-red-300 rounded-md shadow-sm bg-red-50 text-sm font-medium text-red-700 hover:bg-red-100"
+              >
+                🗑️ データリセット
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
